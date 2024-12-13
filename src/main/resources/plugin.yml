@@ -1,0 +1,6 @@
+name: BrilliantTrashChest
+version: 1.0
+main: Rice.Chen.TrashChest.TrashChest
+api-version: 1.20
+description: A plugin that allows players to create trash chests
+folia-supported: true
