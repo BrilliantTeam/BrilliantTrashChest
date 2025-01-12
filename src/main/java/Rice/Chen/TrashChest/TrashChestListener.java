@@ -130,12 +130,14 @@ public class TrashChestListener implements Listener {
         }
     }
     
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onChestBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         
         if (block.getType() == Material.TRAPPED_CHEST) {
             if (block.getState() instanceof Chest chest && manager.isTrashChest(chest)) {
+                chest.setCustomName(null);
+                chest.update(true);
                 manager.removeTrashChest(block, event.getPlayer());
             }
             return;
@@ -146,6 +148,34 @@ public class TrashChestListener implements Listener {
         Block chestBlock = signValidator.findAdjacentChest(block);
         if (chestBlock == null) return;
         
-        manager.removeTrashChest(chestBlock, event.getPlayer());
+        if (chestBlock.getState() instanceof Chest chest && manager.isTrashChest(chest)) {
+            manager.removeTrashChest(chestBlock, event.getPlayer());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityExplode(org.bukkit.event.entity.EntityExplodeEvent event) {
+        for (Block block : event.blockList()) {
+            if (block.getType() == Material.TRAPPED_CHEST) {
+                if (block.getState() instanceof Chest chest && manager.isTrashChest(chest)) {
+                    chest.setCustomName(null);
+                    chest.update(true);
+                    manager.removeTrashChest(block, null);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockExplode(org.bukkit.event.block.BlockExplodeEvent event) {
+        for (Block block : event.blockList()) {
+            if (block.getType() == Material.TRAPPED_CHEST) {
+                if (block.getState() instanceof Chest chest && manager.isTrashChest(chest)) {
+                    chest.setCustomName(null);
+                    chest.update(true);
+                    manager.removeTrashChest(block, null);
+                }
+            }
+        }
     }
 }

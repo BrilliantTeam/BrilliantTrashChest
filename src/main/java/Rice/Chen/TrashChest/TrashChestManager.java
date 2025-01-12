@@ -47,18 +47,23 @@ public class TrashChestManager {
     }
 
     public void removeTrashChest(Block block, Player player) {
-        if (block == null || player == null) return;
+        if (block == null) return;
         if (!(block.getState() instanceof Chest chest)) return;
         if (!isTrashChest(chest)) return;
 
-        schedulerHelper.runBlockTask(block, () -> {
-            chest.setCustomName(null);
-            chest.removeMetadata(METADATA_KEY, plugin);
-            chest.update(true);
+        dataManager.removeTrashChest(block);
 
-            dataManager.removeTrashChest(block);
-            messageManager.sendRemoveMessage(player);
-        });
+        schedulerHelper.runDelayedBlockTask(block, () -> {
+            if (block.getState() instanceof Chest remainingChest) {
+                remainingChest.removeMetadata(METADATA_KEY, plugin);
+                remainingChest.setCustomName(null);
+                remainingChest.update(true);
+            }
+            
+            if (player != null) {
+                messageManager.sendRemoveMessage(player);
+            }
+        }, 1L);
     }
 
     public boolean isTrashChest(Chest chest) {
