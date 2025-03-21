@@ -1,7 +1,6 @@
 package Rice.Chen.TrashChest;
 
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -9,10 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.SoundCategory;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public class TrashChestManager {
     private static final String CHEST_NAME = "§c銷毀儲物箱";
@@ -75,34 +70,7 @@ public class TrashChestManager {
         if (!isTrashChest(chest)) return;
 
         Inventory inv = chest.getInventory();
-        World world = block.getWorld();
-        Location loc = block.getLocation();
-
-        // 音效消除任務引用
-        AtomicReference<BukkitTask> soundCancellerTask = new AtomicReference<>();
         
-        // 音效消除邏輯
-        Runnable soundCanceller = () -> {
-            for (Player player : world.getPlayers()) {
-                if (player.getLocation().distance(loc) <= 16) {
-                    cancelChestSounds(player);
-                }
-            }
-        };
-
-        // 開始音效消除任務
-        if (schedulerHelper.isFolia()) {
-            // 修改：使用 1L 作為初始延遲，然後每 tick 執行一次
-            plugin.getServer().getRegionScheduler().runAtFixedRate(plugin, loc, 
-                task -> soundCanceller.run(), 1L, 1L);
-        } else {
-            soundCancellerTask.set(plugin.getServer().getScheduler().runTaskTimer(plugin, 
-                soundCanceller, 0L, 1L));
-        }
-
-        // 先執行一次音效消除
-        soundCanceller.run();
-
         // 執行開箱動畫
         chest.open();
         
@@ -110,14 +78,6 @@ public class TrashChestManager {
         schedulerHelper.runDelayedBlockTask(block, () -> {
             chest.close();
             inv.clear();
-            
-            // 停止音效消除任務
-            if (soundCancellerTask.get() != null) {
-                soundCancellerTask.get().cancel();
-            }
-            
-            // 最後再清一次音效
-            soundCanceller.run();
         }, 10L);
     }
 
@@ -126,37 +86,9 @@ public class TrashChestManager {
         if (!isTrashChest(chest)) return;
 
         schedulerHelper.runBlockTask(block, () -> {
-            World world = block.getWorld();
-            Location loc = block.getLocation();
-
-            // 清除附近玩家的音效
-            for (Player player : world.getPlayers()) {
-                if (player.getLocation().distance(loc) <= 2) {
-                    cancelChestSounds(player);
-                }
-            }
-
-            // 清除物品
+            // 直接清除物品
             chest.getInventory().clear();
         });
-    }
-
-    private void cancelChestSounds(Player player) {
-        // 嘗試所有音效類別
-        for (SoundCategory category : SoundCategory.values()) {
-            player.stopSound(Sound.BLOCK_CHEST_OPEN, category);
-            player.stopSound(Sound.BLOCK_CHEST_CLOSE, category);
-        }
-        
-        // 不指定類別的音效清除
-        player.stopSound(Sound.BLOCK_CHEST_OPEN);
-        player.stopSound(Sound.BLOCK_CHEST_CLOSE);
-        
-        // 播放音量為 0 的音效來覆蓋
-        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 
-                        SoundCategory.BLOCKS, 0.0f, 1.0f);
-        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, 
-                        SoundCategory.BLOCKS, 0.0f, 1.0f);
     }
 
     public void restoreTrashChest(Block block) {
