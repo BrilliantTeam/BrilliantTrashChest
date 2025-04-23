@@ -22,7 +22,6 @@ public class SchedulerHelper {
         }
     }
 
-    // Add public getter for isFolia
     public boolean isFolia() {
         return isFolia;
     }
@@ -62,7 +61,6 @@ public class SchedulerHelper {
 
     public void cancelTasks() {
         if (isFolia) {
-            // Folia will handle task cancellation automatically when plugin is disabled
         } else {
             plugin.getServer().getScheduler().cancelTasks(plugin);
         }

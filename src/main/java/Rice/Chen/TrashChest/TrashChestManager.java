@@ -71,10 +71,8 @@ public class TrashChestManager {
 
         Inventory inv = chest.getInventory();
         
-        // 執行開箱動畫
         chest.open();
         
-        // 延遲關閉和清除
         schedulerHelper.runDelayedBlockTask(block, () -> {
             chest.close();
             inv.clear();
@@ -86,7 +84,6 @@ public class TrashChestManager {
         if (!isTrashChest(chest)) return;
 
         schedulerHelper.runBlockTask(block, () -> {
-            // 直接清除物品
             chest.getInventory().clear();
         });
     }

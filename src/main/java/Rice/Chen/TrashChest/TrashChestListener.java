@@ -60,10 +60,8 @@ public class TrashChestListener implements Listener {
         if (!(destination.getHolder() instanceof Chest chest)) return;
         if (!manager.isTrashChest(chest)) return;
 
-        // 檢查來源是否為漏斗
         if (event.getSource().getType() == InventoryType.HOPPER) {
             Block chestBlock = chest.getBlock();
-            // 使用 SchedulerHelper 來安排延遲任務
             schedulerHelper.runDelayedBlockTask(chestBlock, () -> {
                 if (!destination.isEmpty()) {
                     manager.clearChestWithAnimation(chestBlock);
@@ -77,7 +75,6 @@ public class TrashChestListener implements Listener {
         if (!(event.getInventory().getHolder() instanceof Chest chest)) return;
         if (!manager.isTrashChest(chest)) return;
 
-        // 確保物品欄是空的當玩家開啟時
         if (!event.getInventory().isEmpty()) {
             manager.clearChestImmediately(chest.getBlock());
         }
@@ -89,7 +86,6 @@ public class TrashChestListener implements Listener {
         if (!(event.getInventory().getHolder() instanceof Chest chest)) return;
         if (!manager.isTrashChest(chest)) return;
 
-        // 只有當物品欄不為空時才執行清除
         if (!event.getInventory().isEmpty()) {
             manager.clearChestImmediately(chest.getBlock());
         }
@@ -100,7 +96,6 @@ public class TrashChestListener implements Listener {
         if (!(event.getInventory().getHolder() instanceof Chest chest)) return;
         if (!manager.isTrashChest(chest)) return;
 
-        // 如果是往箱子內放入物品，立即清除
         if (event.getView().getTopInventory().equals(event.getClickedInventory())) {
             Block chestBlock = chest.getBlock();
             schedulerHelper.runDelayedBlockTask(chestBlock, () -> {
@@ -116,7 +111,6 @@ public class TrashChestListener implements Listener {
         if (!(event.getInventory().getHolder() instanceof Chest chest)) return;
         if (!manager.isTrashChest(chest)) return;
 
-        // 檢查是否有物品被拖曳到箱子內
         boolean draggedToChest = event.getRawSlots().stream()
             .anyMatch(slot -> slot < event.getView().getTopInventory().getSize());
 
