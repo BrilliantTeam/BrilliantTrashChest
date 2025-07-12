@@ -60,7 +60,7 @@ public class TrashChestListener implements Listener {
         if (!(destination.getHolder() instanceof Chest chest)) return;
         if (!manager.isTrashChest(chest)) return;
 
-        if (event.getSource().getType() == InventoryType.HOPPER) {
+        if (event.getSource().getType() == InventoryType.HOPPER || event.getSource().getType() == InventoryType.DROPPER) {
             Block chestBlock = chest.getBlock();
             schedulerHelper.runDelayedBlockTask(chestBlock, () -> {
                 if (!destination.isEmpty()) {
