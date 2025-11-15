@@ -4,3 +4,4 @@ main: Rice.Chen.TrashChest.TrashChest
 api-version: 1.20
 description: A plugin that allows players to create trash chests
 folia-supported: true
+author: RiceChen
